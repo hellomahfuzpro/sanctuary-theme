@@ -1,0 +1,19 @@
+/*
+Theme Name: The Sanctuary
+Theme URI: https://github.com/OWNER/sanctuary-theme
+Author: The Sanctuary Web Team
+Author URI: https://thesanctuarystone.co.uk
+Description: Bespoke Elementor-powered theme for The Sanctuary, Stone. Ships a library of custom section widgets, a Customizer-driven header/footer, and self-hosted brand fonts. Requires Elementor (Pro for forms). Updates over the air from GitHub.
+Version: 0.1.0
+Requires at least: 6.2
+Tested up to: 6.5
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: sanctuary
+Tags: elementor, custom-colors, custom-menu, custom-logo, featured-images
+*/
+
+/* Runtime styles live in assets/css/tokens.css and assets/css/widgets.css,
+   enqueued from functions.php. This file exists for the WordPress theme header
+   and the version string the GitHub updater compares against. */

@@ -1,0 +1,75 @@
+/* ==========================================================================
+   The Sanctuary — design tokens & base
+   Ported verbatim from the client mockups so custom widgets render identically.
+   ========================================================================== */
+:root{
+  --cream:#FCF6EE; --cream-2:#F6ECDD; --peach:#FCE3DA;
+  --coral:#FF6F5E; --coral-deep:#ED5742; --amber:#FFB23E; --teal:#4FBFB0;
+  --ink:#33272E; --muted:#7A6E72; --line:rgba(51,39,46,.12);
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Hanken Grotesk",system-ui,sans-serif;
+  --script:"Sacramento",cursive;
+  --maxw:1140px;
+}
+
+/* ---- base ------------------------------------------------------------ */
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{margin:0;font-family:var(--body);color:var(--ink);background:var(--cream);line-height:1.55;-webkit-font-smoothing:antialiased;}
+.snc a{color:inherit;}
+.snc img,.snc svg{max-width:100%;display:block;}
+
+/* Section rhythm. Applied to our widgets' outer wrapper. */
+.snc-section{padding-block:clamp(3rem,6.5vw,5rem);}
+.snc-wrap,.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(1.15rem,4vw,2.6rem);}
+
+/* ---- section heading ------------------------------------------------- */
+.snc .eyebrow{font-weight:700;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--coral-deep);margin:0 0 1rem;}
+.snc h2.title,.snc .title{font-family:var(--display);font-weight:700;font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.04;letter-spacing:-.018em;margin:0 0 .6rem;}
+.snc .lede{max-width:56ch;color:var(--muted);font-size:1.08rem;margin:0 0 2.2rem;}
+.snc .note{color:var(--coral-deep);font-weight:700;}
+
+/* ---- buttons --------------------------------------------------------- */
+.snc .btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:-.01em;border:0;border-radius:999px;padding:.85rem 1.7rem;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .15s ease;}
+.snc .btn:hover{transform:translateY(-1px);}
+.snc .btn-primary{background:var(--coral-deep);color:#fff;}
+.snc .btn-amber{background:var(--amber);color:var(--ink);}
+.snc .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);}
+.snc .btn:focus-visible{outline:3px solid var(--teal);outline-offset:2px;}
+
+/* ---- header ---------------------------------------------------------- */
+header.site{position:sticky;top:0;z-index:50;background:rgba(252,246,238,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+header.site .nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:.7rem;}
+.brand{font-family:var(--script);font-size:1.9rem;line-height:1;color:var(--ink);text-decoration:none;}
+.brand img{max-height:46px;width:auto;}
+.nav-links{display:flex;gap:1.6rem;font-weight:600;font-size:.96rem;list-style:none;margin:0;padding:0;}
+.nav-links a{text-decoration:none;color:var(--ink);}
+.nav-links a:hover{color:var(--coral-deep);}
+header.site .nav .btn{padding:.6rem 1.2rem;font-size:.92rem;}
+.nav-toggle{display:none;background:none;border:0;cursor:pointer;font-size:1.5rem;color:var(--ink);}
+@media(max-width:860px){
+  .nav-links{position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:var(--cream);border-bottom:1px solid var(--line);padding:.5rem 0;display:none;}
+  .nav-links.is-open{display:flex;}
+  .nav-links li{padding:.6rem clamp(1.15rem,4vw,2.6rem);}
+  .nav-toggle{display:block;}
+}
+
+/* ---- footer ---------------------------------------------------------- */
+footer.site{background:var(--ink);color:#C9BEB8;font-size:.92rem;}
+footer.site .wrap{padding-block:2.6rem;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:1.6rem;}
+@media(max-width:760px){footer.site .wrap{grid-template-columns:1fr;}}
+footer.site .brand{color:var(--cream);display:inline-block;margin-bottom:.4rem;}
+footer.site h4{font-family:var(--display);color:var(--cream);font-size:1rem;margin:0 0 .6rem;}
+footer.site a{color:#C9BEB8;text-decoration:none;display:block;margin-bottom:.35rem;}
+footer.site a:hover{color:var(--amber);}
+footer.site .disclaimer{border-top:1px solid rgba(255,255,255,.12);}
+footer.site .disclaimer .wrap{padding-block:1rem;display:block;font-size:.8rem;color:#9A8F89;}
+
+/* ---- placeholder tiles (editor fallback when no image set) ----------- */
+.ph{position:relative;border-radius:18px;display:flex;align-items:flex-end;padding:.9rem;color:#fff;font-weight:700;font-size:.74rem;letter-spacing:.02em;text-shadow:0 1px 6px rgba(0,0,0,.25);min-height:180px;}
+.ph::after{content:"PLACEHOLDER";position:absolute;top:.7rem;left:.9rem;font-size:.58rem;letter-spacing:.16em;background:rgba(0,0,0,.28);padding:.18rem .45rem;border-radius:6px;}
+.ph.g1{background:linear-gradient(135deg,#FF8A6E,#FFB23E);}
+.ph.g2{background:linear-gradient(135deg,#4FBFB0,#FFC861);}
+.ph.g3{background:linear-gradient(135deg,#FF6F5E,#FF9E7A);}
+.ph.g4{background:linear-gradient(140deg,#7BCFC3,#4FBFB0);}
+.ph.g5{background:linear-gradient(140deg,#FFC861,#FF8A6E);}

@@ -1,0 +1,26 @@
+/* ==========================================================================
+   Self-hosted brand fonts.
+   Drop the .woff2 files named below into this folder (see README-FONTS.md).
+   Until then, the stacks in tokens.css fall back to system-ui gracefully.
+   ========================================================================== */
+
+/* Bricolage Grotesque — display (weights 500/600/700, variable optical size). */
+@font-face{
+  font-family:"Bricolage Grotesque";
+  font-style:normal;font-weight:500 700;font-display:swap;
+  src:url("bricolage-grotesque.woff2") format("woff2");
+}
+
+/* Hanken Grotesk — body (400/500/600/700). */
+@font-face{
+  font-family:"Hanken Grotesk";
+  font-style:normal;font-weight:400 700;font-display:swap;
+  src:url("hanken-grotesk.woff2") format("woff2");
+}
+
+/* Sacramento — script wordmark fallback (single weight). */
+@font-face{
+  font-family:"Sacramento";
+  font-style:normal;font-weight:400;font-display:swap;
+  src:url("sacramento.woff2") format("woff2");
+}
