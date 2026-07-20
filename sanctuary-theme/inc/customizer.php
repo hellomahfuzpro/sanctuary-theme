@@ -11,6 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Checkbox sanitizer → strict bool.
+ */
+function sanctuary_sanitize_checkbox( $checked ) {
+	return ( isset( $checked ) && true === (bool) $checked );
+}
+
 function sanctuary_customize_register( $wp_customize ) {
 
 	/* ---- Panel -------------------------------------------------------- */
@@ -86,20 +93,65 @@ function sanctuary_customize_register( $wp_customize ) {
 		) );
 	}
 
-	/* ---- Social ------------------------------------------------------- */
+	/* ---- Social / Say hello ------------------------------------------- */
 	$wp_customize->add_section( 'sanctuary_social', array(
-		'title' => __( 'Social', 'sanctuary' ),
-		'panel' => 'sanctuary_options',
+		'title'       => __( 'Say hello (footer)', 'sanctuary' ),
+		'description' => __( 'The footer "Say hello" column. Each point shows only if its URL/value is filled. Give a point a custom label, or leave the label blank to use the sensible default.', 'sanctuary' ),
+		'panel'       => 'sanctuary_options',
 	) );
-	$wp_customize->add_setting( 'sanctuary_social_instagram', array(
-		'default'           => '',
-		'sanitize_callback' => 'esc_url_raw',
+
+	// Master: show icons.
+	$wp_customize->add_setting( 'sanctuary_hello_show_icons', array(
+		'default'           => true,
+		'sanitize_callback' => 'sanctuary_sanitize_checkbox',
 	) );
-	$wp_customize->add_control( 'sanctuary_social_instagram', array(
-		'label'   => __( 'Instagram URL', 'sanctuary' ),
+	$wp_customize->add_control( 'sanctuary_hello_show_icons', array(
+		'label'   => __( 'Show icons next to each point', 'sanctuary' ),
 		'section' => 'sanctuary_social',
-		'type'    => 'url',
+		'type'    => 'checkbox',
 	) );
+
+	// Heading text for the column.
+	$wp_customize->add_setting( 'sanctuary_hello_heading', array(
+		'default'           => __( 'Say hello', 'sanctuary' ),
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	$wp_customize->add_control( 'sanctuary_hello_heading', array(
+		'label'   => __( 'Column heading', 'sanctuary' ),
+		'section' => 'sanctuary_social',
+		'type'    => 'text',
+	) );
+
+	// Channels: value setting + label setting.
+	$channels = array(
+		'instagram' => array( __( 'Instagram URL', 'sanctuary' ), 'url', __( 'Instagram', 'sanctuary' ) ),
+		'facebook'  => array( __( 'Facebook URL', 'sanctuary' ), 'url', __( 'Facebook', 'sanctuary' ) ),
+		'whatsapp'  => array( __( 'WhatsApp link/number', 'sanctuary' ), 'text', __( 'WhatsApp', 'sanctuary' ) ),
+		'email'     => array( __( 'Email (uses Contact email if blank)', 'sanctuary' ), 'text', __( 'Email', 'sanctuary' ) ),
+		'phone'     => array( __( 'Phone (uses Contact phone if blank)', 'sanctuary' ), 'text', __( 'Call', 'sanctuary' ) ),
+	);
+	foreach ( $channels as $key => $c ) {
+		$val_id   = ( 'instagram' === $key ) ? 'sanctuary_social_instagram' : 'sanctuary_hello_' . $key . '_value';
+		$sanitize = ( 'url' === $c[1] ) ? 'esc_url_raw' : 'sanitize_text_field';
+
+		$wp_customize->add_setting( $val_id, array( 'default' => '', 'sanitize_callback' => $sanitize ) );
+		$wp_customize->add_control( $val_id, array(
+			'label'   => $c[0],
+			'section' => 'sanctuary_social',
+			'type'    => ( 'url' === $c[1] ) ? 'url' : 'text',
+		) );
+
+		$wp_customize->add_setting( 'sanctuary_hello_' . $key . '_label', array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( 'sanctuary_hello_' . $key . '_label', array(
+			/* translators: %s: channel default label */
+			'label'   => sprintf( __( '↳ %s label', 'sanctuary' ), $c[2] ),
+			'section' => 'sanctuary_social',
+			'type'    => 'text',
+		) );
+	}
 
 	/* ---- Integrations (widget fallbacks) ------------------------------ */
 	$wp_customize->add_section( 'sanctuary_integrations', array(

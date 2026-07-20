@@ -26,6 +26,18 @@ All notable changes to The Sanctuary theme. The version here must match
   Run via **Tools → Sanctuary: Build pages** or `wp sanctuary build-pages`.
 - Content checklist (`CONTENT-CHECKLIST.md`).
 
+## [0.4.0]
+### Fixed
+- **Headings now use the brand display font (Bricolage).** Elementor's global
+  "kit" typography was tying on specificity and winning by load order (showing
+  its `--e-global-typography-*` var). Brand fonts + image radii are now enforced.
+- **Image border-radius** reliably applied to hero, feature, gallery and IG
+  media even when a global `img` rule would reset it.
+### Added
+- **Footer "Say hello" is configurable**: custom label per point, a master
+  show/hide-icons toggle, built-in channel icons, and extra Facebook + WhatsApp
+  points (Customize → The Sanctuary Options → Say hello).
+
 ## [0.3.0]
 ### Fixed
 - **Elementor editor dark mode**: theme CSS is no longer injected into the

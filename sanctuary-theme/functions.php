@@ -60,6 +60,42 @@ function sanctuary_resource_hints( $urls, $relation ) {
 add_filter( 'wp_resource_hints', 'sanctuary_resource_hints', 10, 2 );
 
 /**
+ * Build a WhatsApp href from either a full link or a phone number.
+ */
+function sanctuary_whatsapp_href( $value ) {
+	$value = trim( (string) $value );
+	if ( '' === $value ) {
+		return '';
+	}
+	if ( 0 === strpos( $value, 'http' ) ) {
+		return $value;
+	}
+	return 'https://wa.me/' . preg_replace( '/[^0-9]/', '', $value );
+}
+
+/**
+ * Inline SVG icon for a footer "Say hello" channel. Uses currentColor so it
+ * inherits the link colour. Returns trusted static markup.
+ *
+ * @param string $key instagram|facebook|whatsapp|email|phone
+ * @return string
+ */
+function sanctuary_hello_icon( $key ) {
+	$open  = '<svg class="hello-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">';
+	$paths = array(
+		'instagram' => '<rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>',
+		'facebook'  => '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+		'whatsapp'  => '<path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 21l2.2-5.2A8.5 8.5 0 1 1 21 11.5z"/><path d="M8.5 9c0 3.6 2.9 6.5 6.5 6.5"/>',
+		'email'     => '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m3 6 9 7 9-7"/>',
+		'phone'     => '<path d="M22 16.9v2.6a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 3.7 2 2 0 0 1 4 1.5h2.6a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L7.6 9a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/>',
+	);
+	if ( empty( $paths[ $key ] ) ) {
+		return '';
+	}
+	return $open . $paths[ $key ] . '</svg>';
+}
+
+/**
  * Front-end assets.
  */
 function sanctuary_assets() {

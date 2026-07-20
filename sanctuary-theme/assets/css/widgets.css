@@ -207,3 +207,36 @@
 .snc-closing--coral .btn-primary{background:#fff;color:var(--coral-deep);}
 .snc-closing--coral .btn-ghost{color:#fff;border-color:rgba(255,255,255,.6);}
 .snc-closing--teal .btn-primary{background:#06302B;color:#fff;}
+
+/* ==========================================================================
+   Brand overrides — must beat Elementor's global "kit" typography, which ties
+   on specificity (e.g. .elementor-kit h1 vs .snc-hero h1) and wins by load
+   order. !important guarantees the brand fonts/radii regardless of that order.
+   ========================================================================== */
+
+/* Display font (Bricolage) for every heading in our sections. */
+.snc h1,.snc h2,.snc h3,.snc h4,
+.snc .title,.snc-card-title,.snc-fork h3,.snc-style h3,.snc-uc-b h3,
+.snc-quote p,.snc .amt,.snc .figure,.snc-strip-item .big,
+.snc-float-card .t,.snc-faq dt,.snc-find dt,.snc .btn{
+  font-family:var(--display) !important;
+}
+
+/* Body font (Hanken) for running text + form controls. */
+.snc,.snc p,.snc li,.snc dd,.snc .lede,.snc .sub,.snc .eyebrow,
+.snc-card-meta,.snc-chip,.snc-strip-item span,
+.snc input,.snc select,.snc textarea{
+  font-family:var(--body) !important;
+}
+
+/* Script font for the wordmark. */
+.brand{font-family:var(--script) !important;}
+
+/* Image radii — keep our rounded media even if a global img rule sets 0. */
+.snc-hero-media img{border-radius:18px !important;aspect-ratio:4/5;object-fit:cover;width:100%;}
+.snc-feature-media img{border-radius:18px !important;aspect-ratio:4/3;object-fit:cover;width:100%;}
+.snc-gallery img{border-radius:14px !important;height:100%;width:100%;object-fit:cover;}
+.snc-ig-row img{border-radius:12px !important;aspect-ratio:1;object-fit:cover;width:100%;}
+/* Fork & use-case images are clipped by a rounded, overflow-hidden parent. */
+.snc-fork,.snc-uc{overflow:hidden;}
+.snc-fork img,.snc-uc img{object-fit:cover;width:100%;}
