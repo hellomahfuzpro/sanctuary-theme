@@ -2,10 +2,10 @@
 
 ## plugin-update-checker (required for GitHub auto-updates)
 
-The GitHub updater in `inc/updater.php` expects the **Plugin Update Checker**
-library here at `lib/plugin-update-checker/`.
+**Status: vendored (v5.6).** Present at `lib/plugin-update-checker/` and used by
+`inc/updater.php` (pointed at `hellomahfuzpro/sanctuary-theme`). No action needed.
 
-Vendor it once:
+To re-vendor / upgrade in future:
 
 ```bash
 cd sanctuary-theme/lib

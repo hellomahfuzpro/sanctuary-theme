@@ -26,6 +26,23 @@ All notable changes to The Sanctuary theme. The version here must match
   Run via **Tools → Sanctuary: Build pages** or `wp sanctuary build-pages`.
 - Content checklist (`CONTENT-CHECKLIST.md`).
 
+## [0.2.0]
+### Fixed
+- **Fonts/wordmark now match the mockups** — the theme loads the original Google
+  Fonts (Bricolage Grotesque, Hanken Grotesk, Sacramento) instead of falling
+  back to system fonts. (0.1.0 shipped empty self-hosted font files.)
+### Added
+- **Auto-update is now live**: vendored Plugin Update Checker v5.6 into
+  `lib/` and pointed the updater at `hellomahfuzpro/sanctuary-theme`. No extra
+  plugin needed — updates appear under Appearance → Themes.
+- **Auto free-image import**: the page seeder now downloads a curated set of
+  free-licensed Unsplash photos into the Media Library and assigns them to the
+  widgets (filter `sanctuary_image_sources` to swap). Falls back to gradient
+  placeholders if a download fails.
+### Changed
+- **Page seeder builds flexbox Containers**, not the legacy Section/Column
+  structure. Also enables the container feature on build.
+
 ## [Unreleased]
-- Vendor `lib/plugin-update-checker`, add self-hosted font files, set repo URL,
-  add `screenshot.png`; then live QA on a WordPress install.
+- Optional: self-host the fonts (drop woff2s in assets/fonts) for UK GDPR;
+  add `screenshot.png`; live QA on a WordPress install.

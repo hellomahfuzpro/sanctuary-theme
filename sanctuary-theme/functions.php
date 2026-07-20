@@ -37,11 +37,33 @@ function sanctuary_setup() {
 add_action( 'after_setup_theme', 'sanctuary_setup' );
 
 /**
- * Front-end assets. Fonts are self-hosted (see assets/fonts + fonts.css) for
- * performance and UK GDPR — no third-party Google Fonts request at runtime.
+ * The exact Google Fonts the client mockups use: Bricolage Grotesque (display),
+ * Hanken Grotesk (body), Sacramento (script wordmark). Kept as the original
+ * hosted stylesheet so the type and wordmark match the design out of the box.
+ * (To self-host later for UK GDPR, drop woff2s in /assets/fonts and point this
+ * handle at assets/fonts/fonts.css instead — see README-FONTS.md.)
+ */
+function sanctuary_fonts_url() {
+	return 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&family=Sacramento&display=swap';
+}
+
+/**
+ * Preconnect to the Google Fonts hosts for faster first paint.
+ */
+function sanctuary_resource_hints( $urls, $relation ) {
+	if ( 'preconnect' === $relation ) {
+		$urls[] = 'https://fonts.googleapis.com';
+		$urls[] = array( 'href' => 'https://fonts.gstatic.com', 'crossorigin' );
+	}
+	return $urls;
+}
+add_filter( 'wp_resource_hints', 'sanctuary_resource_hints', 10, 2 );
+
+/**
+ * Front-end assets.
  */
 function sanctuary_assets() {
-	wp_enqueue_style( 'sanctuary-fonts', SANCTUARY_URI . '/assets/fonts/fonts.css', array(), SANCTUARY_VERSION );
+	wp_enqueue_style( 'sanctuary-fonts', sanctuary_fonts_url(), array(), null );
 	wp_enqueue_style( 'sanctuary-tokens', SANCTUARY_URI . '/assets/css/tokens.css', array( 'sanctuary-fonts' ), SANCTUARY_VERSION );
 	wp_enqueue_style( 'sanctuary-widgets', SANCTUARY_URI . '/assets/css/widgets.css', array( 'sanctuary-tokens' ), SANCTUARY_VERSION );
 	// style.css last so a child theme / custom CSS can override.
@@ -56,7 +78,7 @@ add_action( 'wp_enqueue_scripts', 'sanctuary_assets' );
  * with the real design system.
  */
 function sanctuary_editor_assets() {
-	wp_enqueue_style( 'sanctuary-fonts', SANCTUARY_URI . '/assets/fonts/fonts.css', array(), SANCTUARY_VERSION );
+	wp_enqueue_style( 'sanctuary-fonts', sanctuary_fonts_url(), array(), null );
 	wp_enqueue_style( 'sanctuary-tokens', SANCTUARY_URI . '/assets/css/tokens.css', array(), SANCTUARY_VERSION );
 	wp_enqueue_style( 'sanctuary-widgets', SANCTUARY_URI . '/assets/css/widgets.css', array(), SANCTUARY_VERSION );
 }

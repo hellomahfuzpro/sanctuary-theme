@@ -27,34 +27,33 @@ function snc_uid() {
 }
 
 /**
- * Wrap a list of [ widgetType => settings ] widgets, one per full-width section.
+ * Wrap a list of [ widgetType => settings ] widgets, one per full-width
+ * flexbox **container** (Elementor's current layout element, not the legacy
+ * section/column structure). Each widget renders its own full-bleed <section>,
+ * so the container is full-width with zero padding/gap.
  *
  * @param array $widgets Array of array( 'type' => string, 'settings' => array ).
  * @return array Elementor data tree.
  */
-function snc_build_sections( array $widgets ) {
+function snc_build_tree( array $widgets ) {
 	$tree = array();
 	foreach ( $widgets as $w ) {
 		$tree[] = array(
 			'id'       => snc_uid(),
-			'elType'   => 'section',
-			'settings' => array( 'content_width' => 'full', 'gap' => 'no', 'padding' => array( 'unit' => 'px', 'top' => '0', 'bottom' => '0', 'left' => '0', 'right' => '0', 'isLinked' => true ) ),
+			'elType'   => 'container',
+			'settings' => array(
+				'content_width' => 'full',
+				'flex_gap'      => array( 'unit' => 'px', 'size' => 0, 'column' => '0', 'row' => '0' ),
+				'padding'       => array( 'unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '0', 'left' => '0', 'isLinked' => true ),
+			),
 			'isInner'  => false,
 			'elements' => array(
 				array(
-					'id'       => snc_uid(),
-					'elType'   => 'column',
-					'settings' => array( '_column_size' => 100, '_inline_size' => null ),
-					'isInner'  => false,
-					'elements' => array(
-						array(
-							'id'         => snc_uid(),
-							'elType'     => 'widget',
-							'widgetType' => $w['type'],
-							'settings'   => isset( $w['settings'] ) ? $w['settings'] : array(),
-							'elements'   => array(),
-						),
-					),
+					'id'         => snc_uid(),
+					'elType'     => 'widget',
+					'widgetType' => $w['type'],
+					'settings'   => isset( $w['settings'] ) ? $w['settings'] : array(),
+					'elements'   => array(),
 				),
 			),
 		);
@@ -75,6 +74,107 @@ function snc_rep( array $rows ) {
 	);
 }
 
+/* ===================================================================
+   Auto free-image import
+   The seeder downloads a curated set of free-licensed Unsplash photos
+   (Unsplash License: free for commercial use, no attribution required)
+   into the Media Library and assigns them to the widgets. Each unique
+   image downloads once (cached by slot in an option); re-running the
+   seeder reuses them. If a download fails (e.g. no outbound network),
+   the widget simply falls back to its gradient placeholder.
+
+   Swap in your own photos by filtering `sanctuary_image_sources`.
+   =================================================================== */
+
+/**
+ * Slot => source URL. Filterable so real photography can replace these.
+ */
+function snc_image_sources() {
+	$base = 'https://images.unsplash.com/photo-';
+	$q    = '?auto=format&fit=crop&w=1400&q=80';
+	$map  = array(
+		'hero'      => $base . '1470229722913-7c0e2dbbafd3' . $q,
+		'class'     => $base . '1533928298208-27ff66555d8d' . $q,
+		'social'    => $base . '1504609773096-104ff2c73ba4' . $q,
+		'venue'     => $base . '1519671482749-fd09be7ccebf' . $q,
+		'wedding'   => $base . '1464349095431-e9a21285b5f3' . $q,
+		'party'     => $base . '1516450360452-9312f5e86fc7' . $q,
+		'corporate' => $base . '1511795409834-ef04bbd61622' . $q,
+		'bar'       => $base . '1530103862676-de8c9debad1d' . $q,
+		'detail'    => $base . '1478146059778-26028b07395a' . $q,
+		'crowd'     => $base . '1519225421980-715cb0215aed' . $q,
+		'food'      => $base . '1522337660859-02fbefca4702' . $q,
+	);
+	return apply_filters( 'sanctuary_image_sources', $map );
+}
+
+/**
+ * Marker used inside page definitions; resolved to a real attachment at build time.
+ */
+function snc_img( $slot ) {
+	return array( '_snc_slot' => $slot );
+}
+
+/**
+ * Download one URL into the Media Library, returning an attachment ID (0 on failure).
+ */
+function snc_sideload_url( $url, $filename, $desc ) {
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+
+	$tmp = download_url( $url, 30 );
+	if ( is_wp_error( $tmp ) ) {
+		return 0;
+	}
+	$file = array( 'name' => $filename, 'tmp_name' => $tmp );
+	$id   = media_handle_sideload( $file, 0, $desc );
+	if ( is_wp_error( $id ) ) {
+		@unlink( $tmp ); // phpcs:ignore
+		return 0;
+	}
+	return (int) $id;
+}
+
+/**
+ * Resolve a slot to a MEDIA control value ({id,url}), downloading + caching once.
+ */
+function snc_media_for_slot( $slot ) {
+	$map = snc_image_sources();
+	if ( empty( $map[ $slot ] ) ) {
+		return array();
+	}
+	$cache = get_option( 'sanctuary_seeded_images', array() );
+	if ( ! empty( $cache[ $slot ] ) && get_post( $cache[ $slot ] ) ) {
+		$id = (int) $cache[ $slot ];
+		return array( 'id' => $id, 'url' => wp_get_attachment_url( $id ) );
+	}
+	$id = snc_sideload_url( $map[ $slot ], 'sanctuary-' . sanitize_file_name( $slot ) . '.jpg', 'The Sanctuary — ' . $slot );
+	if ( ! $id ) {
+		return array();
+	}
+	$cache[ $slot ] = $id;
+	update_option( 'sanctuary_seeded_images', $cache );
+	return array( 'id' => $id, 'url' => wp_get_attachment_url( $id ) );
+}
+
+/**
+ * Recursively replace `_snc_slot` markers in a settings tree with real media.
+ */
+function snc_resolve_images( $value ) {
+	if ( is_array( $value ) ) {
+		if ( isset( $value['_snc_slot'] ) ) {
+			return snc_media_for_slot( $value['_snc_slot'] );
+		}
+		$out = array();
+		foreach ( $value as $k => $v ) {
+			$out[ $k ] = snc_resolve_images( $v );
+		}
+		return $out;
+	}
+	return $value;
+}
+
 /**
  * Definitions for all five pages: slug => [ title, is_front, widgets[] ].
  */
@@ -88,9 +188,15 @@ function snc_page_definitions() {
 		'widgets'  => array(
 			array( 'type' => 'sanctuary_hero', 'settings' => array(
 				'credit' => 'Led by international champion <b>Oliver Hand</b> · <span class="note">[verify]</span>',
+				'image'  => snc_img( 'hero' ),
 			) ),
 			array( 'type' => 'sanctuary_stat_strip', 'settings' => array() ),
-			array( 'type' => 'sanctuary_fork', 'settings' => array() ),
+			array( 'type' => 'sanctuary_fork', 'settings' => array(
+				'cards' => snc_rep( array(
+					array( 'gradient' => 'g1', 'image' => snc_img( 'class' ), 'title' => 'Learn to dance & nights out', 'text' => 'Friendly classes for every level, plus social nights with a full bar. Come on your own or bring friends.', 'link_text' => "See classes & what's on →", 'link' => array( 'url' => '#classes' ), 'image_label' => 'A lively class in motion' ),
+					array( 'gradient' => 'g4', 'image' => snc_img( 'venue' ), 'title' => 'Celebrate & hire the venue', 'text' => 'A bright, versatile space for weddings, parties and work events — with a sprung floor, a bar and room to make a day of it.', 'link_text' => 'Explore venue hire →', 'link' => array( 'url' => '#hire' ), 'image_label' => 'An event set up in the space' ),
+				) ),
+			) ),
 			array( 'type' => 'sanctuary_feature', 'settings' => array(
 				'bg'        => 'cream2',
 				'anchor'    => 'classes',
@@ -104,6 +210,7 @@ function snc_page_definitions() {
 				'offer'     => '<b>[FIRST-CLASS OFFER — load-bearing]</b> e.g. "First class £X" or "Your first class is on us."',
 				'btn_text'  => 'See the timetable & book',
 				'gradient'  => 'g5',
+				'image'       => snc_img( 'social' ),
 				'image_label' => 'Beginners laughing through a class',
 			) ),
 			array( 'type' => 'sanctuary_event_cards', 'settings' => array() ),
@@ -121,6 +228,7 @@ function snc_page_definitions() {
 				'btn_style'   => 'btn-amber',
 				'specs'       => 'Capacity: <span class="note">[seated / standing]</span> · Rates: <span class="note">[from £X]</span>',
 				'gradient'    => 'g2',
+				'image'       => snc_img( 'wedding' ),
 				'image_label' => 'A real event dressed in the space',
 			) ),
 			array( 'type' => 'sanctuary_testimonials', 'settings' => array() ),
@@ -194,6 +302,7 @@ function snc_page_definitions() {
 				'btn2_text'   => '',
 				'show_card'   => '',
 				'gradient'    => 'g4',
+				'image'       => snc_img( 'venue' ),
 				'image_label' => 'The space looking its best — dressed, or full of people',
 			) ),
 			array( 'type' => 'sanctuary_stat_strip', 'settings' => array(
@@ -208,9 +317,24 @@ function snc_page_definitions() {
 					array( 'big' => 'Accessibility & parking', 'sub' => '<span class="note">[add]</span>' ),
 				) ),
 			) ),
-			array( 'type' => 'sanctuary_use_cases', 'settings' => array() ),
+			array( 'type' => 'sanctuary_use_cases', 'settings' => array(
+				'cards' => snc_rep( array(
+					array( 'gradient' => 'g1', 'image' => snc_img( 'wedding' ), 'title' => 'Weddings', 'link_text' => 'See weddings →' ),
+					array( 'gradient' => 'g5', 'image' => snc_img( 'party' ), 'title' => 'Parties', 'link_text' => 'See parties →' ),
+					array( 'gradient' => 'g4', 'image' => snc_img( 'corporate' ), 'title' => 'Corporate', 'link_text' => 'See corporate →' ),
+					array( 'gradient' => 'g2', 'image' => snc_img( 'crowd' ), 'title' => 'Christenings & more', 'link_text' => 'Enquire →' ),
+				) ),
+			) ),
 			array( 'type' => 'sanctuary_included_list', 'settings' => array( 'bg' => 'cream2' ) ),
-			array( 'type' => 'sanctuary_gallery', 'settings' => array() ),
+			array( 'type' => 'sanctuary_gallery', 'settings' => array(
+				'items' => snc_rep( array(
+					array( 'gradient' => 'g1', 'image' => snc_img( 'venue' ), 'label' => 'Wide shot of a dressed event', 'big' => 'yes' ),
+					array( 'gradient' => 'g4', 'image' => snc_img( 'detail' ), 'label' => 'Detail' ),
+					array( 'gradient' => 'g5', 'image' => snc_img( 'crowd' ), 'label' => 'Guests / floor' ),
+					array( 'gradient' => 'g2', 'image' => snc_img( 'bar' ), 'label' => 'Bar' ),
+					array( 'gradient' => 'g1', 'image' => snc_img( 'party' ), 'label' => 'Setup' ),
+				) ),
+			) ),
 			array( 'type' => 'sanctuary_rates', 'settings' => array() ),
 			array( 'type' => 'sanctuary_enquiry_form', 'settings' => array() ),
 			array( 'type' => 'sanctuary_testimonials', 'settings' => array(
@@ -245,6 +369,7 @@ function snc_page_definitions() {
 				'btn2_text'   => '',
 				'show_card'   => '',
 				'gradient'    => 'g5',
+				'image'       => snc_img( 'party' ),
 				'image_label' => 'The space, dressed and full of people',
 				'jump_items'  => snc_rep( array(
 					array( 'label' => 'Weddings', 'link' => array( 'url' => '#weddings' ) ),
@@ -280,6 +405,7 @@ function snc_page_definitions() {
 				'btn_style'   => 'btn-ghost',
 				'btn_link'    => array( 'url' => '#enquire' ),
 				'gradient'    => 'g4',
+				'image'       => snc_img( 'wedding' ),
 				'image_label' => 'A real wedding held here',
 			) ),
 			array( 'type' => 'sanctuary_feature', 'settings' => array(
@@ -301,6 +427,7 @@ function snc_page_definitions() {
 				'btn_style'   => 'btn-ghost',
 				'btn_link'    => array( 'url' => '#enquire' ),
 				'gradient'    => 'g4',
+				'image'       => snc_img( 'corporate' ),
 				'image_label' => 'A workshop / team event set up',
 			) ),
 			array( 'type' => 'sanctuary_feature', 'settings' => array(
@@ -321,6 +448,7 @@ function snc_page_definitions() {
 				'btn_style'   => 'btn-primary',
 				'btn_link'    => array( 'url' => '#enquire' ),
 				'gradient'    => 'g1',
+				'image'       => snc_img( 'party' ),
 				'image_label' => 'A lively party in full swing',
 			) ),
 			array( 'type' => 'sanctuary_included_list', 'settings' => array(
@@ -362,6 +490,10 @@ function snc_page_definitions() {
 function snc_build_pages() {
 	$log = array();
 
+	// Make sure flexbox containers render (default on current Elementor; this
+	// keeps older installs from falling back to the legacy layout).
+	update_option( 'elementor_experiment-container', 'active' );
+
 	foreach ( snc_page_definitions() as $slug => $def ) {
 		$existing = get_page_by_path( $slug );
 
@@ -387,7 +519,8 @@ function snc_build_pages() {
 			continue;
 		}
 
-		$data = snc_build_sections( $def['widgets'] );
+		$widgets = snc_resolve_images( $def['widgets'] );
+		$data    = snc_build_tree( $widgets );
 
 		update_post_meta( $page_id, '_elementor_data', wp_slash( wp_json_encode( $data ) ) );
 		update_post_meta( $page_id, '_elementor_edit_mode', 'builder' );
