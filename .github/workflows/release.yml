@@ -1,0 +1,43 @@
+name: Build theme release
+
+# On every version tag (e.g. v0.2.0) build a clean theme zip and attach it to a
+# GitHub Release. The theme's GitHub updater (inc/updater.php) uses this release
+# asset, so the installed folder is always the theme root — even though the theme
+# lives in the sanctuary-theme/ subfolder of this repo.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify version tag matches style.css
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          CSS=$(grep -iE '^\s*Version:' sanctuary-theme/style.css | head -1 | sed -E 's/.*Version:\s*//' | tr -d '[:space:]')
+          echo "Tag: $TAG  |  style.css: $CSS"
+          if [ "$TAG" != "$CSS" ]; then
+            echo "::error::Tag ($TAG) does not match style.css Version ($CSS). Bump the header before tagging."
+            exit 1
+          fi
+
+      - name: Build theme zip
+        run: |
+          # Zip the theme so it extracts to a top-level "sanctuary" folder.
+          cp -r sanctuary-theme sanctuary
+          zip -r sanctuary.zip sanctuary \
+            -x '*/node_modules/*' '*.zip'
+
+      - name: Create GitHub Release with asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: sanctuary.zip
+          generate_release_notes: true
