@@ -26,6 +26,14 @@ All notable changes to The Sanctuary theme. The version here must match
   Run via **Tools → Sanctuary: Build pages** or `wp sanctuary build-pages`.
 - Content checklist (`CONTENT-CHECKLIST.md`).
 
+## [0.5.0]
+### Fixed
+- **Real cause of the heading-font bug**: our design token was named `--display`,
+  which collides with the `--display: flex` CSS variable Elementor sets on every
+  flexbox Container. Inside a container `var(--display)` resolved to `flex`, so
+  `font-family` was invalid and fell back. Renamed the font tokens to
+  `--snc-display` / `--snc-body` / `--snc-script` so they can never collide.
+
 ## [0.4.0]
 ### Fixed
 - **Headings now use the brand display font (Bricolage).** Elementor's global
