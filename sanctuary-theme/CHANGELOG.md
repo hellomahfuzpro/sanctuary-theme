@@ -26,6 +26,12 @@ All notable changes to The Sanctuary theme. The version here must match
   Run via **Tools → Sanctuary: Build pages** or `wp sanctuary build-pages`.
 - Content checklist (`CONTENT-CHECKLIST.md`).
 
+## [0.6.0]
+### Fixed
+- Footer "Visit" menu no longer shows list bullets (`list-style: none`).
+- Footer address now shows a location-pin icon, matching the other "Say hello"
+  points (respects the show-icons toggle).
+
 ## [0.5.0]
 ### Fixed
 - **Real cause of the heading-font bug**: our design token was named `--display`,

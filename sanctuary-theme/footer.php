@@ -101,7 +101,7 @@ $disclaimer = get_theme_mod( 'sanctuary_footer_disclaimer', '' );
 			}
 			?>
 			<?php if ( $address ) : ?>
-				<address class="hello-address" style="font-style:normal"><?php echo nl2br( esc_html( $address ) ); ?></address>
+				<address class="hello-address" style="font-style:normal"><?php echo $show_icons ? sanctuary_hello_icon( 'location' ) : ''; // phpcs:ignore ?><span><?php echo nl2br( esc_html( $address ) ); ?></span></address>
 			<?php endif; ?>
 		</div>
 	</div>

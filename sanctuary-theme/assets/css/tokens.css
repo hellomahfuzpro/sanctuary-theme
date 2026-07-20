@@ -62,10 +62,13 @@ footer.site .brand{color:var(--cream);display:inline-block;margin-bottom:.4rem;}
 footer.site h4{font-family:var(--snc-display);color:var(--cream);font-size:1rem;margin:0 0 .6rem;}
 footer.site a{color:#C9BEB8;text-decoration:none;display:block;margin-bottom:.35rem;}
 footer.site a:hover{color:var(--amber);}
+footer.site .footer-links,footer.site ul.footer-links{list-style:none;margin:0;padding:0;}
+footer.site .footer-links li{margin:0;}
 footer.site .hello-link{display:flex;align-items:center;gap:.55rem;}
 footer.site .hello-ico{flex:0 0 auto;opacity:.85;}
 footer.site .hello-link:hover .hello-ico{opacity:1;}
-footer.site .hello-address{margin-top:.6rem;color:#9A8F89;font-size:.86rem;}
+footer.site .hello-address{display:flex;align-items:flex-start;gap:.55rem;margin-top:.6rem;color:#9A8F89;font-size:.86rem;}
+footer.site .hello-address .hello-ico{margin-top:2px;}
 footer.site .disclaimer{border-top:1px solid rgba(255,255,255,.12);}
 footer.site .disclaimer .wrap{padding-block:1rem;display:block;font-size:.8rem;color:#9A8F89;}
 
