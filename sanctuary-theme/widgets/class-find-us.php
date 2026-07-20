@@ -30,9 +30,15 @@ class Sanctuary_Widget_FindUs extends Sanctuary_Base_Widget {
 	protected function register_controls() {
 		$this->start_controls_section( 'content', array( 'label' => __( 'Content', 'sanctuary' ) ) );
 
+		$this->add_control( 'map_address', array(
+			'label'       => __( 'Map address', 'sanctuary' ),
+			'description' => __( 'A map is generated from this address automatically — no API key needed. Overridden by a custom embed below or the Customizer contact address.', 'sanctuary' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => __( '65 High Street, Stone, Staffordshire', 'sanctuary' ),
+		) );
 		$this->add_control( 'map_embed', array(
-			'label'       => __( 'Map embed', 'sanctuary' ),
-			'description' => __( 'Google Maps <iframe> embed. Leave blank to use Customizer → Integrations.', 'sanctuary' ),
+			'label'       => __( 'Custom map embed (optional)', 'sanctuary' ),
+			'description' => __( 'Paste a full Google Maps <iframe> to override the auto-generated map. Leave blank to use the address above (or Customizer → Integrations).', 'sanctuary' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 4,
 		) );
@@ -64,9 +70,25 @@ class Sanctuary_Widget_FindUs extends Sanctuary_Base_Widget {
 
 	protected function render() {
 		$s   = $this->get_settings_for_display();
+
+		// Priority: custom embed → Customizer embed → auto-generated from an address.
 		$map = trim( (string) $s['map_embed'] );
 		if ( '' === $map ) {
 			$map = trim( (string) get_theme_mod( 'sanctuary_map_embed', '' ) );
+		}
+		if ( '' === $map ) {
+			$addr = trim( (string) $s['map_address'] );
+			if ( '' === $addr ) {
+				$addr = trim( (string) get_theme_mod( 'sanctuary_contact_address', '' ) );
+			}
+			if ( '' === $addr ) {
+				$addr = '65 High Street, Stone, Staffordshire';
+			}
+			$map = sprintf(
+				'<iframe src="https://maps.google.com/maps?q=%s&z=15&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="%s"></iframe>',
+				rawurlencode( $addr ),
+				esc_attr__( 'Map', 'sanctuary' )
+			);
 		}
 		?>
 		<section class="snc-section snc snc-find" id="find">

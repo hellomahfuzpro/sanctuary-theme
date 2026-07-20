@@ -74,15 +74,16 @@ function sanctuary_assets() {
 add_action( 'wp_enqueue_scripts', 'sanctuary_assets' );
 
 /**
- * Load the token CSS inside the Elementor editor so custom widgets preview
- * with the real design system.
+ * Load the design system inside the Elementor *preview iframe* only, so custom
+ * widgets preview correctly. We deliberately do NOT enqueue into the editor
+ * panel UI (elementor/editor/after_enqueue_styles) — our global body/reset rules
+ * would override Elementor's own panel styling and break its dark mode.
  */
 function sanctuary_editor_assets() {
 	wp_enqueue_style( 'sanctuary-fonts', sanctuary_fonts_url(), array(), null );
 	wp_enqueue_style( 'sanctuary-tokens', SANCTUARY_URI . '/assets/css/tokens.css', array(), SANCTUARY_VERSION );
-	wp_enqueue_style( 'sanctuary-widgets', SANCTUARY_URI . '/assets/css/widgets.css', array(), SANCTUARY_VERSION );
+	wp_enqueue_style( 'sanctuary-widgets', SANCTUARY_URI . '/assets/css/widgets.css', array( 'sanctuary-tokens' ), SANCTUARY_VERSION );
 }
-add_action( 'elementor/editor/after_enqueue_styles', 'sanctuary_editor_assets' );
 add_action( 'elementor/preview/enqueue_styles', 'sanctuary_editor_assets' );
 
 /**

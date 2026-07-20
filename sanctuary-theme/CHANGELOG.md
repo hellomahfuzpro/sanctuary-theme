@@ -26,6 +26,16 @@ All notable changes to The Sanctuary theme. The version here must match
   Run via **Tools → Sanctuary: Build pages** or `wp sanctuary build-pages`.
 - Content checklist (`CONTENT-CHECKLIST.md`).
 
+## [0.3.0]
+### Fixed
+- **Elementor editor dark mode**: theme CSS is no longer injected into the
+  editor *panel* UI (only the preview iframe), so control labels are readable
+  again in dark mode. Our global reset was overriding Elementor's panel styling.
+### Added
+- **Find Us map works out of the box**: the widget now auto-generates a Google
+  Maps embed from an address (no API key), falling back to the Customizer
+  contact address, then the venue default. A custom `<iframe>` still overrides it.
+
 ## [0.2.0]
 ### Fixed
 - **Fonts/wordmark now match the mockups** — the theme loads the original Google
