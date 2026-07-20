@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Filterable so staging/forks can override without editing the theme.
  */
 function sanctuary_github_repo() {
-	return apply_filters( 'sanctuary_github_repo', 'https://github.com/OWNER/sanctuary-theme' );
+	return apply_filters( 'sanctuary_github_repo', 'https://github.com/hellomahfuzpro/sanctuary-theme' );
 }
 
 function sanctuary_bootstrap_updater() {
