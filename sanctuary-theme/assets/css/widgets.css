@@ -160,6 +160,51 @@
 .snc-faq dt{font-family:var(--snc-display);font-weight:700;font-size:1.1rem;margin-top:1.2rem;}
 .snc-faq dd{margin:.2rem 0 0;color:var(--muted);}
 
+/* ---- Timetable intro (legend + callout) ------------------------------ */
+.snc-callout{background:var(--peach);border-radius:14px;padding:.9rem 1.1rem;font-size:.92rem;max-width:60ch;margin:0 0 1.2rem;}
+.snc-callout b{color:var(--coral-deep);}
+.snc-legend{display:flex;flex-wrap:wrap;gap:.5rem;}
+.snc .chip{font-weight:700;font-size:.72rem;letter-spacing:.02em;padding:.3rem .7rem;border-radius:999px;display:inline-flex;align-items:center;gap:.4rem;}
+.snc .chip-bl{background:rgba(237,87,66,.14);color:var(--coral-deep);}
+.snc .chip-ld{background:rgba(79,191,176,.18);color:#2A9D8C;}
+.snc .chip-sq{background:rgba(255,178,62,.22);color:#B77400;}
+.snc .chip-pr{background:rgba(51,39,46,.08);color:var(--ink);}
+
+/* ---- Timetable day (one day's class listing) -------------------------- */
+.snc-timetable-day{background:var(--cream-2);}
+.snc-timetable-day .day{margin-bottom:2rem;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 14px 30px -26px rgba(51,39,46,.4);}
+.snc-timetable-day .day:last-child{margin-bottom:0;}
+.snc-timetable-day .day-head{padding:.9rem 1.3rem;color:#fff;font-family:var(--snc-display);font-weight:700;font-size:1.4rem;letter-spacing:-.01em;}
+.snc-timetable-day .day-head.accent-coral{background:var(--coral);}
+.snc-timetable-day .day-head.accent-teal{background:var(--teal);}
+.snc-timetable-day .day-head.accent-amber{background:var(--amber);color:var(--ink);}
+.snc-timetable-day .day-head.accent-coral-deep{background:var(--coral-deep);}
+
+.snc-timetable-day .tt-head,.snc-timetable-day .tt-row{display:grid;grid-template-columns:118px 1fr 92px 130px;gap:1rem;align-items:center;}
+.snc-timetable-day .tt-head{padding:.7rem 1.3rem;border-bottom:1px solid var(--line);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.snc-timetable-day .tt-row{padding:.95rem 1.3rem;border-bottom:1px solid var(--line);}
+.snc-timetable-day .tt-row:last-child{border-bottom:0;}
+.snc-timetable-day .tt-time{font-family:var(--snc-body);font-weight:700;font-size:.95rem;}
+.snc-timetable-day .tt-class{font-family:var(--snc-display);font-weight:700;font-size:1.08rem;line-height:1.15;}
+.snc-timetable-day .tt-class .sub{display:block;margin-top:.25rem;}
+.snc-timetable-day .tt-price{font-weight:700;font-size:1rem;}
+.snc-timetable-day .tt-price .ph-price{color:var(--coral-deep);}
+.snc-timetable-day .tt-row .btn{padding:.55rem 1.1rem;font-size:.9rem;text-align:center;}
+
+/* On desktop, price + button sit in their own grid cells (columns 3/4);
+   on mobile they group together under the class name — same pattern as the
+   source mockup. */
+.snc-timetable-day .tt-priceline{display:contents;}
+@media(max-width:720px){
+  .snc-timetable-day .tt-head{display:none;}
+  .snc-timetable-day .tt-row{grid-template-columns:1fr;gap:.4rem;padding:1.1rem 1.2rem;}
+  .snc-timetable-day .tt-time{order:1;color:var(--muted);}
+  .snc-timetable-day .tt-class{order:2;font-size:1.15rem;}
+  .snc-timetable-day .tt-priceline{order:3;display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;}
+  .snc-timetable-day .tt-price{font-size:1.05rem;}
+  .snc-timetable-day .tt-row .btn{width:auto;}
+}
+
 /* ---- Booking embed (Acuity) ----------------------------------------- */
 .snc-timetable{background:var(--cream-2);}
 .snc-embed{border:2px dashed var(--coral);border-radius:20px;background:#fff;padding:clamp(2rem,6vw,3.5rem);text-align:center;}

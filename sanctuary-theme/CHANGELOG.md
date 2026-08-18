@@ -3,6 +3,27 @@
 All notable changes to The Sanctuary theme. The version here must match
 `Version:` in `style.css` — that is what the GitHub updater compares against.
 
+## [0.7.0] — Adults Timetable page
+### Added
+- `Timetable Intro` widget (`sanctuary_timetable_intro`) — centered heading,
+  an optional callout (e.g. "prices to be added"), and a colour-coded category
+  legend (repeater).
+- `Timetable Day` widget (`sanctuary_timetable`) — one day's class listing as
+  a coloured card: day label, accent colour, and a repeater of classes
+  (time / name / category chip / price / booking button). Stack one instance
+  per day, same composable pattern as Event Cards / FAQ.
+- New CSS in `assets/css/widgets.css`: `.snc-timetable-day` (the day card +
+  responsive time/class/price/book grid, collapsing to a stacked layout under
+  720px) and shared `.chip`/`.chip-{bl,ld,sq,pr}` + `.snc-callout`/
+  `.snc-legend` styles used by both new widgets.
+- Ported from `sanctuary-timetable.html` (adults ballroom/Latin/line-dancing
+  timetable mockup).
+
+### Fixed
+- Avoided a section-class collision: the existing Booking Embed widget
+  already used `.snc-timetable` — the new day-listing widget uses
+  `.snc-timetable-day` instead.
+
 ## [0.1.0] — Phase 0
 ### Added
 - Theme foundation: `style.css` header, `functions.php` bootstrap, template
