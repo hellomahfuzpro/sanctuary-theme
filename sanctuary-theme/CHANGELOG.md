@@ -3,6 +3,27 @@
 All notable changes to The Sanctuary theme. The version here must match
 `Version:` in `style.css` — that is what the GitHub updater compares against.
 
+## [0.8.0] — Per-page rebuild + Timetable page wired in
+### Changed
+- `snc_build_pages()` now takes an optional list of slugs to limit the
+  rebuild to — previously it always rewrote `_elementor_data` on every
+  page, so fixing or adding one page silently reset any manual edits made
+  in the Elementor editor on the others.
+- Tools → Sanctuary: Build pages now shows one button per page ("Rebuild
+  this page" / "Create this page"), each scoped to only that page.
+  "Rebuild ALL pages" still exists but is now a separate, explicitly-risky
+  action behind a warning.
+- `wp sanctuary build-pages` gained `--page=<slug>` (comma-separated for
+  more than one); omitting it keeps the old rebuild-everything behaviour.
+
+### Added
+- Wired the Timetable Intro + Timetable Day widgets (0.7.0) into an actual
+  `timetable` page definition: the intro section, then Monday/Tuesday/
+  Wednesday/Thursday as separate Timetable Day instances with the real
+  class times, categories, and booking links ported from
+  `sanctuary-timetable.html` (verified byte-for-byte against the source —
+  all 10 booking URLs, including the two reused across multiple classes).
+
 ## [0.7.0] — Adults Timetable page
 ### Added
 - `Timetable Intro` widget (`sanctuary_timetable_intro`) — centered heading,

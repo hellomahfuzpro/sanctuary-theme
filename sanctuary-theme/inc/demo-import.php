@@ -8,9 +8,14 @@
  * stays in sync with the widget names defined in /widgets.
  *
  * Run it from **Tools → Sanctuary: Build pages**, or via WP-CLI:
- *   wp sanctuary build-pages
+ *   wp sanctuary build-pages                  (rebuilds every page)
+ *   wp sanctuary build-pages --page=timetable (rebuilds just that one)
  *
- * Re-running updates the same pages (matched by slug) rather than duplicating.
+ * Re-running updates the same page(s) (matched by slug) rather than
+ * duplicating. Rebuilding is per-page by default (both in the admin screen
+ * and via --page) so fixing/adding one page never overwrites manual edits
+ * made in the Elementor editor on the others — "rebuild everything" is a
+ * separate, clearly-labelled action for a full reset.
  *
  * @package Sanctuary
  */
@@ -71,6 +76,22 @@ function snc_rep( array $rows ) {
 			return $row;
 		},
 		$rows
+	);
+}
+
+/**
+ * One Timetable Day class-repeater row. Booking URLs are the real Acuity
+ * links from the source timetable (ported from sanctuary-timetable.html),
+ * not placeholders.
+ */
+function snc_tt_row( $time, $name, $category, $url ) {
+	return array(
+		'time'       => $time,
+		'name'       => $name,
+		'category'   => $category,
+		'price'      => '£[X]',
+		'book_label' => 'Book',
+		'book_link'  => array( 'url' => $url, 'is_external' => true ),
 	);
 }
 
@@ -481,13 +502,73 @@ function snc_page_definitions() {
 		),
 	);
 
+	/* --------------------------------------------------------------- TIMETABLE */
+	$pages['timetable'] = array(
+		'title'    => 'Timetable',
+		'is_front' => false,
+		'widgets'  => array(
+			array( 'type' => 'sanctuary_timetable_intro', 'settings' => array() ),
+			array( 'type' => 'sanctuary_timetable', 'settings' => array(
+				'day_label' => 'Monday',
+				'accent'    => 'coral',
+				'classes'   => snc_rep( array(
+					snc_tt_row( '6:00–6:45pm', 'Absolute Beginners Ballroom & Latin', 'bl', 'https://thesanctuarybookinglink.as.me/schedule/d1c7a59a/?appointmentTypeIds[]=68412778' ),
+					snc_tt_row( '6:45–7:30pm', 'Ballroom & Latin Formation Team', 'bl', 'https://thesanctuarybookinglink.as.me/schedule/d1c7a59a/?appointmentTypeIds[]=95115322' ),
+					snc_tt_row( '7:30–8:15pm', 'Beginners Ballroom & Latin', 'bl', 'https://thesanctuarybookinglink.as.me/schedule/d1c7a59a/?appointmentTypeIds[]=43431031' ),
+					snc_tt_row( '8:15–9:00pm', 'Improvers Ballroom & Latin', 'bl', 'https://thesanctuarybookinglink.as.me/adultballroomandlatinimprovers' ),
+				) ),
+			) ),
+			array( 'type' => 'sanctuary_timetable', 'settings' => array(
+				'day_label' => 'Tuesday',
+				'accent'    => 'teal',
+				'classes'   => snc_rep( array(
+					snc_tt_row( '6:15–7:00pm', 'Absolute Beginners Line Dancing', 'ld', 'https://jheventsxthesanctuary.as.me/schedule/817f9984/?appointmentTypeIds[]=82211679' ),
+					snc_tt_row( '7:00–8:00pm', 'Beginners Line Dancing', 'ld', 'https://jheventsxthesanctuary.as.me/schedule/817f9984/?appointmentTypeIds[]=78435908' ),
+					snc_tt_row( '8:00–9:00pm', 'Improvers Line Dancing', 'ld', 'https://jheventsxthesanctuary.as.me/schedule/817f9984/?appointmentTypeIds[]=78435949' ),
+				) ),
+			) ),
+			array( 'type' => 'sanctuary_timetable', 'settings' => array(
+				'day_label' => 'Wednesday',
+				'accent'    => 'amber',
+				'classes'   => snc_rep( array(
+					snc_tt_row( '7:30–9:30pm', 'Open Ballroom & Latin Practice', 'pr', 'https://thesanctuarybookinglink.as.me/schedule/d1c7a59a/?appointmentTypeIds[]=48207391' ),
+				) ),
+			) ),
+			array( 'type' => 'sanctuary_timetable', 'settings' => array(
+				'day_label' => 'Thursday',
+				'accent'    => 'coral-deep',
+				'classes'   => snc_rep( array(
+					snc_tt_row( '10:00–10:45am', 'Beginners Ballroom & Latin', 'bl', 'https://thesanctuarybookinglink.as.me/schedule/d1c7a59a/?appointmentTypeIds[]=43431031' ),
+					snc_tt_row( '6:00–6:45pm', 'Improvers Ballroom & Latin', 'bl', 'https://thesanctuarybookinglink.as.me/adultballroomandlatinimprovers' ),
+					snc_tt_row( '6:45–7:30pm', 'Beginners Sequence Class', 'sq', 'https://thesanctuarybookinglink.as.me/?appointmentType=73920408' ),
+					snc_tt_row( '7:30–8:15pm', 'Advanced Ballroom & Latin', 'bl', 'https://thesanctuarybookinglink.as.me/schedule/d1c7a59a/?appointmentTypeIds[]=54353079' ),
+					snc_tt_row( '8:15–9:00pm', 'Beginners Line Dancing', 'ld', 'https://jheventsxthesanctuary.as.me/schedule/817f9984/?appointmentTypeIds[]=82211679' ),
+				) ),
+			) ),
+			array( 'type' => 'sanctuary_closing_cta', 'settings' => array(
+				'heading'   => 'Find your class, tap Book.',
+				'text'      => "Every class links straight to its own booking page — pick a time that works and you're set.",
+				'btn1_text' => '',
+				'btn2_text' => '',
+			) ),
+		),
+	);
+
 	return $pages;
 }
 
 /**
- * Create/update all pages. Returns a log array of slug => action.
+ * Create/update pages. Returns a log array of slug => action.
+ *
+ * @param array|null $only_slugs Limit the rebuild to these slugs (e.g.
+ *                                array( 'timetable' ) ). Null (default)
+ *                                rebuilds every page defined in
+ *                                snc_page_definitions() — use deliberately,
+ *                                since it overwrites _elementor_data on
+ *                                EVERY page, including any hand-edited in
+ *                                the Elementor editor since it was last built.
  */
-function snc_build_pages() {
+function snc_build_pages( $only_slugs = null ) {
 	$log = array();
 
 	// Make sure flexbox containers render (default on current Elementor; this
@@ -495,6 +576,10 @@ function snc_build_pages() {
 	update_option( 'elementor_experiment-container', 'active' );
 
 	foreach ( snc_page_definitions() as $slug => $def ) {
+		if ( null !== $only_slugs && ! in_array( $slug, $only_slugs, true ) ) {
+			continue;
+		}
+
 		$existing = get_page_by_path( $slug );
 
 		$postarr = array(
@@ -566,7 +651,12 @@ function sanctuary_build_pages_screen() {
 		if ( ! did_action( 'elementor/loaded' ) ) {
 			echo '<div class="notice notice-error"><p>' . esc_html__( 'Elementor is not active — activate it first.', 'sanctuary' ) . '</p></div>';
 		} else {
-			$log = snc_build_pages();
+			// A specific "page" field means one page's button was clicked;
+			// its absence means the "rebuild everything" button was.
+			$requested = isset( $_POST['snc_page'] ) ? sanitize_key( wp_unslash( $_POST['snc_page'] ) ) : '';
+			$only      = ( '' !== $requested ) ? array( $requested ) : null;
+
+			$log = snc_build_pages( $only );
 			echo '<div class="notice notice-success"><p>' . esc_html__( 'Done:', 'sanctuary' ) . ' ';
 			foreach ( $log as $slug => $action ) {
 				echo esc_html( "$slug: $action  " );
@@ -575,20 +665,58 @@ function sanctuary_build_pages_screen() {
 		}
 	}
 
-	echo '<p>' . esc_html__( 'Creates (or updates) Home, Classes, Venue Hire and Private Hire as Elementor pages built from the custom widgets, and sets Home as the front page.', 'sanctuary' ) . '</p>';
+	echo '<p>' . esc_html__( 'Rebuilding a page overwrites its Elementor content with the definition below — including any manual edits made in the editor since it was last built. Rebuild only the page you actually changed; the other pages are left completely untouched.', 'sanctuary' ) . '</p>';
+
+	echo '<table class="widefat striped" style="max-width:640px;"><tbody>';
+	foreach ( snc_page_definitions() as $slug => $def ) {
+		$existing = get_page_by_path( $slug );
+		$status   = $existing
+			? sprintf( /* translators: %s: last-modified date */ esc_html__( 'exists — last modified %s', 'sanctuary' ), esc_html( get_the_modified_date( '', $existing ) ) )
+			: esc_html__( 'not created yet', 'sanctuary' );
+		echo '<tr>';
+		echo '<td><strong>' . esc_html( $def['title'] ) . '</strong><br><span style="color:#666;">/' . esc_html( $slug ) . '/ — ' . $status . '</span></td>';
+		echo '<td style="text-align:right;">';
+		echo '<form method="post" style="display:inline;">';
+		wp_nonce_field( 'snc_build_pages' );
+		echo '<input type="hidden" name="snc_page" value="' . esc_attr( $slug ) . '">';
+		echo '<button class="button" name="snc_build" value="1">' . ( $existing ? esc_html__( 'Rebuild this page', 'sanctuary' ) : esc_html__( 'Create this page', 'sanctuary' ) ) . '</button>';
+		echo '</form>';
+		echo '</td>';
+		echo '</tr>';
+	}
+	echo '</tbody></table>';
+
+	echo '<p style="margin-top:1.6rem;"><details><summary style="cursor:pointer;color:#a00;">' . esc_html__( 'Rebuild every page at once', 'sanctuary' ) . '</summary>';
+	echo '<p>' . esc_html__( 'This overwrites ALL pages listed above in one go, including any you\'ve hand-edited. Only use this for a full reset.', 'sanctuary' ) . '</p>';
 	echo '<form method="post">';
 	wp_nonce_field( 'snc_build_pages' );
-	echo '<p><button class="button button-primary" name="snc_build" value="1">' . esc_html__( 'Build / rebuild pages', 'sanctuary' ) . '</button></p>';
-	echo '</form></div>';
+	echo '<button class="button" name="snc_build" value="1">' . esc_html__( 'Rebuild ALL pages', 'sanctuary' ) . '</button>';
+	echo '</form></details></p>';
+
+	echo '</div>';
 }
 
 /* ------------------------------------------------------------- WP-CLI ----- */
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	WP_CLI::add_command( 'sanctuary build-pages', function () {
-		$log = snc_build_pages();
+	WP_CLI::add_command( 'sanctuary build-pages', function ( $args, $assoc_args ) {
+		$only = null;
+		if ( ! empty( $assoc_args['page'] ) ) {
+			$only = array_map( 'sanitize_key', explode( ',', $assoc_args['page'] ) );
+		}
+
+		$log = snc_build_pages( $only );
 		foreach ( $log as $slug => $action ) {
 			WP_CLI::log( "$slug: $action" );
 		}
 		WP_CLI::success( 'Pages built.' );
-	} );
+	}, array(
+		'synopsis' => array(
+			array(
+				'type'        => 'assoc',
+				'name'        => 'page',
+				'optional'    => true,
+				'description' => 'Comma-separated slug(s) to rebuild (e.g. --page=timetable). Omit to rebuild every page — overwrites any hand-edited pages too.',
+			),
+		),
+	) );
 }
