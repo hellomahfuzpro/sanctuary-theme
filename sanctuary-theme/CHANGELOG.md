@@ -3,6 +3,31 @@
 All notable changes to The Sanctuary theme. The version here must match
 `Version:` in `style.css` — that is what the GitHub updater compares against.
 
+## [0.10.0] — Timetable stacking spacing + Instagram label
+### Fixed
+- **Stacked Timetable Days had a huge gap between them.** Each widget
+  renders one `.day`, so that card is always `:last-child` and its
+  `margin-bottom` zeroes out — meaning all spacing came from the inherited
+  `.snc-section` band padding, which doubles between neighbours
+  (bottom + top). Four stacked days sat up to 10rem apart where the mockup
+  had 2rem.
+- The Instagram widget appended a hardcoded build-stage note
+  ("live feed, auto-pulled…") to its label on every render, including on
+  the live site once a real feed was connected. It now shows only while
+  the placeholder tiles are displayed, and reads as an instruction
+  ("paste your feed shortcode to go live").
+
+### Added
+- Timetable Day → **Top / bottom spacing**: Compact (default, for
+  stacking), Normal (full section band), or None. Style → Layout &
+  Spacing → Padding still overrides it with exact values.
+
+### Notes
+- Existing Timetable Day instances have no stored `spacing` value, so they
+  pick up the `compact` default — this is the intended spacing fix, but it
+  does mean an already-built timetable page will tighten up on update.
+  Set any instance back to "Normal" to restore the previous look.
+
 ## [0.9.0] — Style controls on every widget + updater fixes
 ### Added
 - A shared **Style tab** on all 21 widgets: text alignment, padding and

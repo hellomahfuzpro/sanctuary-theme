@@ -172,6 +172,12 @@
 
 /* ---- Timetable day (one day's class listing) -------------------------- */
 .snc-timetable-day{background:var(--cream-2);}
+/* One widget = one day, stacked. The inherited .snc-section band padding
+   doubles between neighbours (bottom + top), so "compact" trims it to give
+   roughly the mockup's 2rem gap between day cards. "normal" keeps the full
+   section band; Style → Padding overrides either. */
+.snc-timetable-day.spacing-compact{padding-block:clamp(.6rem,1.4vw,1rem);}
+.snc-timetable-day.spacing-flush{padding-block:0;}
 .snc-timetable-day .day{margin-bottom:2rem;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 14px 30px -26px rgba(51,39,46,.4);}
 .snc-timetable-day .day:last-child{margin-bottom:0;}
 .snc-timetable-day .day-head{padding:.9rem 1.3rem;color:#fff;font-family:var(--snc-display);font-weight:700;font-size:1.4rem;letter-spacing:-.01em;}

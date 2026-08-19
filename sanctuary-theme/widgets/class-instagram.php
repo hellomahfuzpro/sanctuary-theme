@@ -47,13 +47,20 @@ class Sanctuary_Widget_Instagram extends Sanctuary_Base_Widget {
 	}
 
 	protected function render() {
-		$s = $this->get_settings_for_display();
+		$s        = $this->get_settings_for_display();
+		$has_feed = '' !== trim( (string) $s['shortcode'] );
 		?>
 		<div class="snc">
 			<?php if ( $s['label'] ) : ?>
-				<p class="snc-ig-label"><?php echo esc_html( $s['label'] ); ?> — <span class="note"><?php esc_html_e( 'live feed, auto-pulled (no manual updating)', 'sanctuary' ); ?></span></p>
+				<p class="snc-ig-label">
+					<?php echo esc_html( $s['label'] ); ?>
+					<?php if ( ! $has_feed ) : ?>
+						<?php /* Build-stage hint only — drops away once a real feed shortcode is set, so it never reaches the live site. */ ?>
+						— <span class="note"><?php esc_html_e( 'placeholder — paste your feed shortcode to go live', 'sanctuary' ); ?></span>
+					<?php endif; ?>
+				</p>
 			<?php endif; ?>
-			<?php if ( trim( (string) $s['shortcode'] ) ) : ?>
+			<?php if ( $has_feed ) : ?>
 				<?php echo do_shortcode( $s['shortcode'] ); // phpcs:ignore ?>
 			<?php else : ?>
 				<div class="snc-ig-row">

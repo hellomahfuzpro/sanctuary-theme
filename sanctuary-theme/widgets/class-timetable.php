@@ -49,6 +49,22 @@ class Sanctuary_Widget_Timetable extends Sanctuary_Base_Widget {
 			),
 		) );
 
+		// These widgets are designed to stack (one per day), and every widget
+		// inherits the full `.snc-section` band padding — which between two
+		// stacked days doubles up into a huge gap. Compact is the sensible
+		// default here; the Style tab still overrides with exact values.
+		$this->add_control( 'spacing', array(
+			'label'       => __( 'Top / bottom spacing', 'sanctuary' ),
+			'description' => __( 'Compact keeps stacked days close together. For exact values use Style → Layout & Spacing → Padding.', 'sanctuary' ),
+			'type'        => Controls_Manager::SELECT,
+			'default'     => 'compact',
+			'options'     => array(
+				'compact' => __( 'Compact — for stacking days', 'sanctuary' ),
+				'normal'  => __( 'Normal — full section padding', 'sanctuary' ),
+				'flush'   => __( 'None — no top/bottom padding', 'sanctuary' ),
+			),
+		) );
+
 		$rep = new Repeater();
 		$rep->add_control( 'time', array( 'label' => __( 'Time', 'sanctuary' ), 'type' => Controls_Manager::TEXT, 'default' => __( '6:00–6:45pm', 'sanctuary' ) ) );
 		$rep->add_control( 'name', array( 'label' => __( 'Class name', 'sanctuary' ), 'type' => Controls_Manager::TEXT, 'default' => __( 'Absolute Beginners Ballroom & Latin', 'sanctuary' ) ) );
@@ -95,7 +111,7 @@ class Sanctuary_Widget_Timetable extends Sanctuary_Base_Widget {
 			'pr' => __( 'Practice', 'sanctuary' ),
 		);
 		?>
-		<section class="snc-section snc snc-timetable-day">
+		<section class="snc-section snc snc-timetable-day spacing-<?php echo esc_attr( $s['spacing'] ); ?>">
 			<div class="snc-wrap">
 				<div class="day">
 					<div class="day-head accent-<?php echo esc_attr( $s['accent'] ); ?>"><?php echo esc_html( $s['day_label'] ); ?></div>
