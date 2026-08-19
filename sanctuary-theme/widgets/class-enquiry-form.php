@@ -29,7 +29,7 @@ class Sanctuary_Widget_EnquiryForm extends Sanctuary_Base_Widget {
 		return 'eicon-form-horizontal';
 	}
 
-	protected function register_controls() {
+	protected function register_content_controls() {
 		$this->start_controls_section( 'content', array( 'label' => __( 'Content', 'sanctuary' ) ) );
 
 		$this->add_control( 'eyebrow', array( 'label' => __( 'Eyebrow', 'sanctuary' ), 'type' => Controls_Manager::TEXT, 'default' => __( 'Enquire', 'sanctuary' ) ) );

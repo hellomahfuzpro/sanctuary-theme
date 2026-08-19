@@ -28,7 +28,7 @@ class Sanctuary_Widget_Timetable extends Sanctuary_Base_Widget {
 		return 'eicon-table-of-contents';
 	}
 
-	protected function register_controls() {
+	protected function register_content_controls() {
 		$this->start_controls_section( 'content', array( 'label' => __( 'Content', 'sanctuary' ) ) );
 
 		$this->add_control( 'day_label', array(

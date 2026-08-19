@@ -28,7 +28,7 @@ class Sanctuary_Widget_StatStrip extends Sanctuary_Base_Widget {
 		return 'eicon-counter';
 	}
 
-	protected function register_controls() {
+	protected function register_content_controls() {
 		$this->start_controls_section( 'content', array( 'label' => __( 'Strip', 'sanctuary' ) ) );
 
 		$this->add_control( 'style', array(

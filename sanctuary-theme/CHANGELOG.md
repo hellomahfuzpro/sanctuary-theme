@@ -3,6 +3,40 @@
 All notable changes to The Sanctuary theme. The version here must match
 `Version:` in `style.css` — that is what the GitHub updater compares against.
 
+## [0.9.0] — Style controls on every widget + updater fixes
+### Added
+- A shared **Style tab** on all 21 widgets: text alignment, padding and
+  margin (all responsive), background (colour/gradient), heading / text /
+  eyebrow / link colours, border, border-radius and box-shadow.
+  Implemented once in `Sanctuary_Base_Widget::add_style_controls()` and
+  appended automatically, so new widgets get it for free.
+- Tools → **Sanctuary: Updates** — a diagnostics screen showing the
+  installed version, the actual installed folder name, the configured
+  repo, and the latest release the updater can see, plus a "Check for
+  updates now" button that clears the cached check. "No update showing"
+  was previously impossible to debug from inside WordPress.
+
+### Fixed
+- The updater hardcoded the theme directory slug as `sanctuary`. The
+  release zip does extract to `sanctuary/`, but a theme installed any
+  other way (repo download, manual folder upload) sits in a differently
+  named folder — and the mismatch made updates silently never appear. Now
+  derived from `get_template()`, so it matches however it was installed.
+- `Theme URI:` still pointed at the `OWNER/sanctuary-theme` placeholder.
+
+### Notes
+- Adding controls is non-destructive: existing widget instances simply
+  have no value stored for the new keys, so Elementor falls back to their
+  defaults — every one of which is empty here, emitting no CSS. Existing
+  pages render exactly as before. Theme updates also never run the page
+  seeder (it has no automatic hooks), so page content is untouched either
+  way.
+- Widgets now define `register_content_controls()` instead of
+  `register_controls()`; the base class calls it and then appends the
+  Style tab. Renamed across all 21 widgets.
+- After updating, Elementor → Tools → **Regenerate CSS & Data** if styles
+  look stale — that is a cache flush, not content loss.
+
 ## [0.8.0] — Per-page rebuild + Timetable page wired in
 ### Changed
 - `snc_build_pages()` now takes an optional list of slugs to limit the

@@ -29,7 +29,7 @@ class Sanctuary_Widget_Feature extends Sanctuary_Base_Widget {
 		return 'eicon-columns';
 	}
 
-	protected function register_controls() {
+	protected function register_content_controls() {
 
 		/* ---- Layout ---- */
 		$this->start_controls_section( 'layout_sec', array( 'label' => __( 'Layout', 'sanctuary' ) ) );

@@ -31,7 +31,7 @@ class Sanctuary_Widget_Hero extends Sanctuary_Base_Widget {
 		return 'eicon-header';
 	}
 
-	protected function register_controls() {
+	protected function register_content_controls() {
 
 		/* ---- Layout ---- */
 		$this->start_controls_section( 'layout_sec', array( 'label' => __( 'Layout', 'sanctuary' ) ) );

@@ -26,7 +26,7 @@ class Sanctuary_Widget_Heading extends Sanctuary_Base_Widget {
 		return 'eicon-t-letter';
 	}
 
-	protected function register_controls() {
+	protected function register_content_controls() {
 		$this->start_controls_section( 'content', array(
 			'label' => __( 'Heading', 'sanctuary' ),
 		) );

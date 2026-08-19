@@ -14,6 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
+use Elementor\Group_Control_Background;
+use Elementor\Group_Control_Border;
+use Elementor\Group_Control_Box_Shadow;
 
 abstract class Sanctuary_Base_Widget extends Widget_Base {
 
@@ -23,6 +26,149 @@ abstract class Sanctuary_Base_Widget extends Widget_Base {
 
 	public function get_keywords() {
 		return array( 'sanctuary', 'section' );
+	}
+
+	/**
+	 * Every widget gets its own content controls plus the shared Style tab.
+	 *
+	 * Widgets define `register_content_controls()` (their own Content tab);
+	 * the Style tab below is appended automatically so it stays consistent
+	 * across all of them and new widgets get it for free.
+	 */
+	protected function register_controls() {
+		$this->register_content_controls();
+		$this->add_style_controls();
+	}
+
+	/**
+	 * Each widget's own Content-tab controls. Overridden by every widget.
+	 */
+	protected function register_content_controls() {}
+
+	/**
+	 * Shared Style tab: alignment, spacing, background, colours, border.
+	 *
+	 * Every control defaults to empty on purpose — an unset control emits no
+	 * CSS at all, so existing pages render exactly as they did before these
+	 * controls existed. Elementor stores only what the editor actually sets,
+	 * and generates the CSS per widget instance from the `selectors` below,
+	 * scoped to `{{WRAPPER}}` (that instance's own element).
+	 *
+	 * All 21 widgets render a root element carrying the `.snc` class (either
+	 * `<section class="snc-section snc …">` or `<div class="snc">`), so one
+	 * selector reaches every widget's outermost box.
+	 */
+	protected function add_style_controls() {
+		$root = '{{WRAPPER}} .snc';
+
+		/* ---- Layout & spacing ---- */
+		$this->start_controls_section( 'snc_style_layout', array(
+			'label' => __( 'Layout & Spacing', 'sanctuary' ),
+			'tab'   => Controls_Manager::TAB_STYLE,
+		) );
+
+		$this->add_responsive_control( 'snc_align', array(
+			'label'     => __( 'Text alignment', 'sanctuary' ),
+			'type'      => Controls_Manager::CHOOSE,
+			'options'   => array(
+				'left'   => array( 'title' => __( 'Left', 'sanctuary' ), 'icon' => 'eicon-text-align-left' ),
+				'center' => array( 'title' => __( 'Center', 'sanctuary' ), 'icon' => 'eicon-text-align-center' ),
+				'right'  => array( 'title' => __( 'Right', 'sanctuary' ), 'icon' => 'eicon-text-align-right' ),
+			),
+			'default'   => '',
+			'selectors' => array( $root => 'text-align: {{VALUE}};' ),
+		) );
+
+		$this->add_responsive_control( 'snc_padding', array(
+			'label'      => __( 'Padding', 'sanctuary' ),
+			'type'       => Controls_Manager::DIMENSIONS,
+			'size_units' => array( 'px', 'em', 'rem', '%' ),
+			'selectors'  => array( $root => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};' ),
+		) );
+
+		$this->add_responsive_control( 'snc_margin', array(
+			'label'      => __( 'Margin', 'sanctuary' ),
+			'type'       => Controls_Manager::DIMENSIONS,
+			'size_units' => array( 'px', 'em', 'rem', '%' ),
+			'selectors'  => array( $root => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};' ),
+		) );
+
+		$this->end_controls_section();
+
+		/* ---- Background ---- */
+		$this->start_controls_section( 'snc_style_bg', array(
+			'label' => __( 'Background', 'sanctuary' ),
+			'tab'   => Controls_Manager::TAB_STYLE,
+		) );
+
+		$this->add_group_control( Group_Control_Background::get_type(), array(
+			'name'     => 'snc_bg',
+			'types'    => array( 'classic', 'gradient' ),
+			'selector' => $root,
+		) );
+
+		$this->end_controls_section();
+
+		/* ---- Colours ---- */
+		$this->start_controls_section( 'snc_style_colors', array(
+			'label' => __( 'Colours', 'sanctuary' ),
+			'tab'   => Controls_Manager::TAB_STYLE,
+		) );
+
+		$this->add_control( 'snc_heading_color', array(
+			'label'     => __( 'Heading colour', 'sanctuary' ),
+			'type'      => Controls_Manager::COLOR,
+			'selectors' => array(
+				"{$root} .title, {$root} h1, {$root} h2, {$root} h3, {$root} h4" => 'color: {{VALUE}};',
+			),
+		) );
+
+		$this->add_control( 'snc_text_color', array(
+			'label'     => __( 'Text colour', 'sanctuary' ),
+			'type'      => Controls_Manager::COLOR,
+			'selectors' => array(
+				"{$root}, {$root} p, {$root} li, {$root} dd, {$root} .lede, {$root} .sub" => 'color: {{VALUE}};',
+			),
+		) );
+
+		$this->add_control( 'snc_eyebrow_color', array(
+			'label'     => __( 'Eyebrow colour', 'sanctuary' ),
+			'type'      => Controls_Manager::COLOR,
+			'selectors' => array( "{$root} .eyebrow" => 'color: {{VALUE}};' ),
+		) );
+
+		$this->add_control( 'snc_link_color', array(
+			'label'     => __( 'Link colour', 'sanctuary' ),
+			'type'      => Controls_Manager::COLOR,
+			'selectors' => array( "{$root} a:not(.btn)" => 'color: {{VALUE}};' ),
+		) );
+
+		$this->end_controls_section();
+
+		/* ---- Border ---- */
+		$this->start_controls_section( 'snc_style_border', array(
+			'label' => __( 'Border & Shadow', 'sanctuary' ),
+			'tab'   => Controls_Manager::TAB_STYLE,
+		) );
+
+		$this->add_group_control( Group_Control_Border::get_type(), array(
+			'name'     => 'snc_border',
+			'selector' => $root,
+		) );
+
+		$this->add_responsive_control( 'snc_radius', array(
+			'label'      => __( 'Border radius', 'sanctuary' ),
+			'type'       => Controls_Manager::DIMENSIONS,
+			'size_units' => array( 'px', '%' ),
+			'selectors'  => array( $root => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};' ),
+		) );
+
+		$this->add_group_control( Group_Control_Box_Shadow::get_type(), array(
+			'name'     => 'snc_shadow',
+			'selector' => $root,
+		) );
+
+		$this->end_controls_section();
 	}
 
 	/**

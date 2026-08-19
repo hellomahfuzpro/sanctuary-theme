@@ -28,7 +28,7 @@ class Sanctuary_Widget_TimetableIntro extends Sanctuary_Base_Widget {
 		return 'eicon-time-line';
 	}
 
-	protected function register_controls() {
+	protected function register_content_controls() {
 		$this->start_controls_section( 'content', array( 'label' => __( 'Content', 'sanctuary' ) ) );
 
 		$this->add_heading_controls(

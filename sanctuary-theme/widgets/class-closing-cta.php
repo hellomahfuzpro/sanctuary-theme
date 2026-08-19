@@ -26,7 +26,7 @@ class Sanctuary_Widget_ClosingCta extends Sanctuary_Base_Widget {
 		return 'eicon-call-to-action';
 	}
 
-	protected function register_controls() {
+	protected function register_content_controls() {
 		$this->start_controls_section( 'content', array( 'label' => __( 'Content', 'sanctuary' ) ) );
 
 		$this->add_control( 'color', array(
