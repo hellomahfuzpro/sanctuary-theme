@@ -18,7 +18,17 @@ $disclaimer = get_theme_mod( 'sanctuary_footer_disclaimer', '' );
 	<div class="wrap snc">
 		<div>
 			<?php
-			if ( has_custom_logo() ) {
+			// Footer logo → header (Site Identity) logo → plain wordmark.
+			$footer_logo    = (int) get_theme_mod( 'sanctuary_footer_logo', 0 );
+			$footer_logo_h  = (int) get_theme_mod( 'sanctuary_footer_logo_height', 56 );
+			if ( $footer_logo && wp_get_attachment_image_url( $footer_logo, 'full' ) ) {
+				printf(
+					'<a href="%1$s" class="brand footer-logo" style="--snc-footer-logo-h:%2$dpx">%3$s</a>',
+					esc_url( home_url( '/' ) ),
+					$footer_logo_h > 0 ? $footer_logo_h : 56,
+					wp_get_attachment_image( $footer_logo, 'full', false, array( 'alt' => esc_attr( get_bloginfo( 'name' ) ) ) )
+				);
+			} elseif ( has_custom_logo() ) {
 				the_custom_logo();
 			} else {
 				printf( '<a href="%1$s" class="brand">%2$s</a>', esc_url( home_url( '/' ) ), esc_html( get_bloginfo( 'name' ) ) );

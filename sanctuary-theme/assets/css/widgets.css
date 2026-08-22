@@ -247,6 +247,13 @@
 .snc-find dl{margin:0;}
 .snc-find dt{font-weight:700;font-family:var(--snc-display);margin-top:1rem;}
 .snc-find dd{margin:.1rem 0 0;color:var(--muted);}
+/* Grid children default to min-width:auto, so they refuse to shrink below
+   their content — the classic cause of a long email/URL blowing out the
+   column (and the page) on a narrow phone. */
+.snc-find-grid > *{min-width:0;}
+/* Emails and URLs have no natural break opportunity; without this a value
+   like enquiries@thesanctuarystone.co.uk overflows its column on mobile. */
+.snc-find dd,.snc-find dd a{overflow-wrap:anywhere;}
 
 /* ---- Closing CTA band ----------------------------------------------- */
 .snc-closing{text-align:center;}

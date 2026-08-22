@@ -3,6 +3,24 @@
 All notable changes to The Sanctuary theme. The version here must match
 `Version:` in `style.css` — that is what the GitHub updater compares against.
 
+## [0.11.0] — Separate footer logo + mobile overflow guards
+### Added
+- **Customizer → Footer → Footer logo**, with a height control. The header
+  logo is the core Site Identity logo; the footer previously reused that
+  same image, which is a problem when a dark header logo lands on the
+  footer's dark ink background. Falls back to the Site Identity logo, then
+  the site name as text, so nothing changes until a footer logo is set.
+
+### Fixed
+- Long unbreakable strings (emails, URLs) could overflow their column on
+  narrow screens — `enquiries@thesanctuarystone.co.uk` is 33 characters
+  with no natural break point. Added `overflow-wrap:anywhere` to the Find
+  Us detail rows and the footer contact links.
+- `.snc-find-grid` children now set `min-width:0`. Grid items default to
+  `min-width:auto`, meaning they refuse to shrink below their content —
+  the usual cause of a long value blowing out the column, and the page,
+  on mobile.
+
 ## [0.10.0] — Timetable stacking spacing + Instagram label
 ### Fixed
 - **Stacked Timetable Days had a huge gap between them.** Each widget

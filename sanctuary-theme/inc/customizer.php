@@ -28,8 +28,9 @@ function sanctuary_customize_register( $wp_customize ) {
 
 	/* ---- Header ------------------------------------------------------- */
 	$wp_customize->add_section( 'sanctuary_header', array(
-		'title' => __( 'Header', 'sanctuary' ),
-		'panel' => 'sanctuary_options',
+		'title'       => __( 'Header', 'sanctuary' ),
+		'panel'       => 'sanctuary_options',
+		'description' => __( 'The header logo is the site logo, set under Site Identity. The footer can use a different one — see the Footer section.', 'sanctuary' ),
 	) );
 	$wp_customize->add_setting( 'sanctuary_header_cta_label', array(
 		'default'           => __( 'Book a class', 'sanctuary' ),
@@ -54,6 +55,31 @@ function sanctuary_customize_register( $wp_customize ) {
 	$wp_customize->add_section( 'sanctuary_footer', array(
 		'title' => __( 'Footer', 'sanctuary' ),
 		'panel' => 'sanctuary_options',
+	) );
+
+	// Separate footer logo. The header uses the core Site Identity logo; the
+	// footer sits on the dark ink background, where a dark header logo often
+	// disappears — so it needs its own (usually light/reversed) version.
+	$wp_customize->add_setting( 'sanctuary_footer_logo', array(
+		'default'           => 0,
+		'sanitize_callback' => 'absint',
+	) );
+	$wp_customize->add_control( new WP_Customize_Media_Control( $wp_customize, 'sanctuary_footer_logo', array(
+		'label'       => __( 'Footer logo', 'sanctuary' ),
+		'description' => __( 'Optional. Leave empty to reuse the header logo from Site Identity, then the site name as text.', 'sanctuary' ),
+		'section'     => 'sanctuary_footer',
+		'mime_type'   => 'image',
+	) ) );
+	$wp_customize->add_setting( 'sanctuary_footer_logo_height', array(
+		'default'           => 56,
+		'sanitize_callback' => 'absint',
+	) );
+	$wp_customize->add_control( 'sanctuary_footer_logo_height', array(
+		'label'       => __( 'Footer logo height (px)', 'sanctuary' ),
+		'description' => __( 'Caps the height; width scales automatically.', 'sanctuary' ),
+		'section'     => 'sanctuary_footer',
+		'type'        => 'number',
+		'input_attrs' => array( 'min' => 20, 'max' => 200, 'step' => 2 ),
 	) );
 	$wp_customize->add_setting( 'sanctuary_footer_tagline', array(
 		'default'           => __( 'A bright, friendly place to dance, drink and celebrate — in the heart of Stone.', 'sanctuary' ),

@@ -59,12 +59,15 @@ footer.site{background:var(--ink);color:#C9BEB8;font-size:.92rem;}
 footer.site .wrap{padding-block:2.6rem;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:1.6rem;}
 @media(max-width:760px){footer.site .wrap{grid-template-columns:1fr;}}
 footer.site .brand{color:var(--cream);display:inline-block;margin-bottom:.4rem;}
+/* Optional separate footer logo (Customizer → Footer). Height is set per-site
+   via the --snc-footer-logo-h custom property on the link itself. */
+footer.site .footer-logo img{max-height:var(--snc-footer-logo-h,56px);width:auto;height:auto;}
 footer.site h4{font-family:var(--snc-display);color:var(--cream);font-size:1rem;margin:0 0 .6rem;}
 footer.site a{color:#C9BEB8;text-decoration:none;display:block;margin-bottom:.35rem;}
 footer.site a:hover{color:var(--amber);}
 footer.site .footer-links,footer.site ul.footer-links{list-style:none;margin:0;padding:0;}
 footer.site .footer-links li{margin:0;}
-footer.site .hello-link{display:flex;align-items:center;gap:.55rem;}
+footer.site .hello-link{display:flex;align-items:center;gap:.55rem;overflow-wrap:anywhere;}
 footer.site .hello-ico{flex:0 0 auto;opacity:.85;}
 footer.site .hello-link:hover .hello-ico{opacity:1;}
 footer.site .hello-address{display:flex;align-items:flex-start;gap:.55rem;margin-top:.6rem;color:#9A8F89;font-size:.86rem;}
